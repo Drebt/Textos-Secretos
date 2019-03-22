@@ -47,7 +47,7 @@ task main() {
       
       
  //Gira no sentido hor?rio
-      OnRev(OUT_B, -100);
+      OnRev(OUT_B, 00);
       OnRev(OUT_C, G);
 
 
