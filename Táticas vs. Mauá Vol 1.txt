@@ -1,0 +1,5 @@
+Eliminar seu oponente
+Nao se distrair com o Nicola
+Rir das piadas do Anderson
+SetMotors(100,100)
+Comprar 1 EV3

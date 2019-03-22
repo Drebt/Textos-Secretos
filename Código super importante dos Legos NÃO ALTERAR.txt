@@ -1,0 +1,153 @@
+#define D 60  //Dist?ncia efetiva para os sensores ultrass?nicos
+#define G 100 //Pot?ncia dos motores no giro
+#define L IN_4 //Sensor US esquerdo
+#define R IN_3 //Sensor US direito
+
+task main() {
+ //Ultrass?nico esquerdo
+ SetSensorLowspeed(L);
+
+ //Ultrass?nico direito
+ SetSensorLowspeed(R);
+
+
+ //OUT_B = Motor esquerdo
+ //OUT_C = Motor direito
+
+ //OBS: Os sentidos dos motores est?o invertidos
+
+ int t=0;
+ int lock = 0;
+ string lado;
+
+ // Zera a contagem dos bot?es
+ SetButtonPressCount(1,0);
+ SetButtonPressCount(2,0);
+ ClearScreen();
+
+ //Espera escolher o sentido de rota??o
+ TextOut(1,30,"Escolha o lado");
+ until(ButtonPressCount(1) > 0 || ButtonPressCount(2) > 0);
+
+
+ //Delay de 5s para o come?o da partida
+ Wait (4900);
+
+ 
+/*
+ Implementar rotina de rotacao inicial para o robo caso a lanca nao esteja alinhada
+
+ OnRev(OUT_B, 100);
+ OnFwd(OUT_C, -100);
+
+
+ //Gira no sentido anti-hor?rio
+      OnFwd(OUT_B, -G);
+      OnFwd(OUT_C, 100);
+      
+      
+ //Gira no sentido hor?rio
+      OnRev(OUT_B, -100);
+      OnRev(OUT_C, G);
+
+
+ Escolher quanto tempo ele deve girar e em que sentido dependendo do posicionamento do inimigo
+ Fazer diversos programas diferentes
+
+*/
+
+ 
+ 
+ 
+ 
+ 
+
+  //Dependendo do botao apertado (mais vezes):
+ if(ButtonPressCount(1) > ButtonPressCount(2)) {
+  lado = "d";
+  TextOut(1,30,"Giro rapido horario");
+ }
+
+ else if (ButtonPressCount(1) < ButtonPressCount(2)){
+  lado = "e";
+  TextOut(1,30,"Giro rapido anti");
+ }
+ else {
+  lado = "f";
+  TextOut(1,30,"Anda reto");
+  }
+
+ //Anda para frente brevemente ap?s o giro r?pido
+
+ while(true) {
+  ClearScreen();
+  
+  OnRev(OUT_A, 80);
+  
+  if(lado == "d" && !(SensorUS(R) < D || SensorUS(L) < D)) {
+      //Gira no sentido hor?rio
+      OnRev(OUT_B, 100);
+      OnRev(OUT_C, -G);
+      TextOut(1,30,"Giro horario");
+      TextOut(1,40,"(Usando memoria)");
+
+      //Caso algum sensor seja acionado, ele para de girar
+      until(SensorUS(R) < D || SensorUS(L) < D);
+    }
+
+    else if(lado == "e" && !(SensorUS(R) < D || SensorUS(L) < D)) {
+      //Gira no sentido anti-hor?rio
+      OnFwd(OUT_B, G);
+      OnFwd(OUT_C, -100);
+      TextOut(1,30,"Giro anti");
+      TextOut(1,40,"(Usando memoria)");
+
+      //Caso algum sensor seja acionado, ele para de girar
+      until(SensorUS(R) < D || SensorUS(L) < D);
+    }
+
+    else if(lado == "f" && !(SensorUS(R) < D || SensorUS(L) < D)) {
+      //Vai pra frente
+      OnRev(OUT_B, -100);
+      OnFwd(OUT_C, 100);
+      TextOut(1,30,"Anda reto");
+      TextOut(1,40,"(Usando memoria)");
+
+      //Caso algum sensor seja acionado, ele para de girar
+      until(SensorUS(R) < D || SensorUS(L) < D);
+    }
+    //Anda reto enquanto tiver algo a menos de D cm ? frente
+    else if(SensorUS(R) < D && SensorUS(L) < D) {
+      OnRev(OUT_B, -100);
+      OnFwd(OUT_C, 100);
+      TextOut(1,30,"Anda reto");
+      TextOut(1,40,"(Dois ultrassonicos)");
+      //Acabando a condi??o "anormal" volta ao in?cio do loop
+      until(SensorUS(R) < D || SensorUS(L) < D);
+    }
+
+    //Quando o ultrass?nico direito reconhece algo na ?rea mais pr?xima de si
+    //Gira no sentido hor?rio
+    else if(SensorUS(L) < D && !(SensorUS(R) < D)) {
+      OnRev(OUT_B, -100);
+      OnRev(OUT_C, 90);
+      lado = "d";
+      TextOut(1,30,"Giro horario");
+      TextOut(1,40,"(Sensor direito)");
+      until(SensorUS(R) < D);
+    }
+
+     //Quando o ultrass?nico esquerdo reconhece algo na ?rea mais pr?xima de si
+     //Gira no sentido anti-hor?rio
+     else if(SensorUS(R) < D && !(SensorUS(L) < D)) {
+       OnFwd(OUT_B, -100);
+       OnFwd(OUT_C, 90);
+       lado = "e";
+       TextOut(1,30,"Giro anti");
+       TextOut(1,40,"(Sensor esquerdo)");
+       until(SensorUS(L) < D);
+
+     }
+}
+ }
+}
